@@ -2,6 +2,7 @@ package vote
 
 import (
 	"container/heap"
+	log2 "log"
 	"sync"
 
 	mapset "github.com/deckarep/golang-set"
@@ -122,10 +123,11 @@ func (pool *VotePool) putIntoVotePool(vote *types.VoteEnvelope) bool {
 	targetHash := vote.Data.TargetHash
 	header := pool.chain.CurrentBlock().Header()
 	headNumber := header.Number.Uint64()
+	log2.Printf("[putIntoVotePool] start voteAddr=%s source=%d, dest=%d, head=%d\n", common.Bytes2Hex(vote.VoteAddress.Bytes()), int64(vote.Data.SourceNumber), int64(vote.Data.TargetNumber), int64(headNumber))
 
 	// Make sure in the range (currentHeight-lowerLimitOfVoteBlockNumber, currentHeight+upperLimitOfVoteBlockNumber].
 	if targetNumber+lowerLimitOfVoteBlockNumber-1 < headNumber || targetNumber > headNumber+upperLimitOfVoteBlockNumber {
-		log.Debug("BlockNumber of vote is outside the range of header-256~header+11, will be discarded")
+		log.Info("BlockNumber of vote is outside the range of header-256~header+11, will be discarded")
 		return false
 	}
 
@@ -150,12 +152,14 @@ func (pool *VotePool) putIntoVotePool(vote *types.VoteEnvelope) bool {
 
 	voteHash := vote.Hash()
 	if ok := pool.basicVerify(vote, headNumber, votes, isFutureVote, voteHash); !ok {
+		log2.Println("[putIntoVotePool] fail basicVerify")
 		return false
 	}
 
 	if !isFutureVote {
 		// Verify if the vote comes from valid validators based on voteAddress (BLSPublicKey), only verify curVotes here, will verify futureVotes in transfer process.
 		if pool.engine.VerifyVote(pool.chain, vote) != nil {
+			log2.Println("[putIntoVotePool] fail VerifyVote")
 			return false
 		}
 
@@ -164,6 +168,7 @@ func (pool *VotePool) putIntoVotePool(vote *types.VoteEnvelope) bool {
 		pool.votesFeed.Send(voteEv)
 	}
 
+	log2.Println("[putIntoVotePool] putVote")
 	pool.putVote(votes, votesPq, vote, voteData, voteHash, isFutureVote)
 
 	return true
