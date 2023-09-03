@@ -1257,7 +1257,9 @@ func (p *Parlia) VerifyVote(chain consensus.ChainHeaderReader, vote *types.VoteE
 
 	validators := snap.Validators
 	voteAddress := vote.VoteAddress
+	log2.Printf("[VerifyVote] validators=%d\n", len(validators))
 	for addr, validator := range validators {
+		log2.Printf("[VerifyVote] loop validatorAddr=%s, validatorVoteAddr=%s\n", addr.String(), common.Bytes2Hex(validator.VoteAddress.Bytes()))
 		if validator.VoteAddress == voteAddress {
 			if addr == p.val {
 				validVotesfromSelfCounter.Inc(1)
