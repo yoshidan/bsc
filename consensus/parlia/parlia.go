@@ -1054,7 +1054,11 @@ func (p *Parlia) distributeFinalityReward(chain consensus.ChainHeaderReader, sta
 		return err
 	}
 	msg := p.getSystemMessage(header.Coinbase, common.HexToAddress(systemcontracts.ValidatorContract), data, common.Big0)
-	return p.applyTransaction(msg, state, header, cx, txs, receipts, systemTxs, usedGas, mining)
+	err = p.applyTransaction(msg, state, header, cx, txs, receipts, systemTxs, usedGas, mining)
+	if err != nil {
+		log.Error("failed to applyTransaction in distributeFinalityReward")
+	}
+	return err
 }
 
 // Finalize implements consensus.Engine, ensuring no uncles are set, nor block
@@ -1583,7 +1587,11 @@ func (p *Parlia) slash(spoiledVal common.Address, state *state.StateDB, header *
 	// get system message
 	msg := p.getSystemMessage(header.Coinbase, common.HexToAddress(systemcontracts.SlashContract), data, common.Big0)
 	// apply message
-	return p.applyTransaction(msg, state, header, chain, txs, receipts, receivedTxs, usedGas, mining)
+	err = p.applyTransaction(msg, state, header, chain, txs, receipts, receivedTxs, usedGas, mining)
+	if err != nil {
+		log.Error("failed to applyTransaction in initContract")
+	}
+	return err
 }
 
 // init contract
@@ -1613,6 +1621,7 @@ func (p *Parlia) initContract(state *state.StateDB, header *types.Header, chain 
 		log.Trace("init contract", "block hash", header.Hash(), "contract", c)
 		err = p.applyTransaction(msg, state, header, chain, txs, receipts, receivedTxs, usedGas, mining)
 		if err != nil {
+			log.Error("failed to applyTransaction in initContract")
 			return err
 		}
 	}
@@ -1624,7 +1633,11 @@ func (p *Parlia) distributeToSystem(amount *big.Int, state *state.StateDB, heade
 	// get system message
 	msg := p.getSystemMessage(header.Coinbase, common.HexToAddress(systemcontracts.SystemRewardContract), nil, amount)
 	// apply message
-	return p.applyTransaction(msg, state, header, chain, txs, receipts, receivedTxs, usedGas, mining)
+	err := p.applyTransaction(msg, state, header, chain, txs, receipts, receivedTxs, usedGas, mining)
+	if err != nil {
+		log.Error("failed to applyTransaction in distributeToSystem")
+	}
+	return err
 }
 
 // slash spoiled validators
@@ -1645,7 +1658,11 @@ func (p *Parlia) distributeToValidator(amount *big.Int, validator common.Address
 	// get system message
 	msg := p.getSystemMessage(header.Coinbase, common.HexToAddress(systemcontracts.ValidatorContract), data, amount)
 	// apply message
-	return p.applyTransaction(msg, state, header, chain, txs, receipts, receivedTxs, usedGas, mining)
+	err = p.applyTransaction(msg, state, header, chain, txs, receipts, receivedTxs, usedGas, mining)
+	if err != nil {
+		log.Error("failed to applyTransaction in distributeToValidator")
+	}
+	return err
 }
 
 // get system message
@@ -1950,6 +1967,7 @@ func applyMessage(
 		msg.Value(),
 	)
 	if err != nil {
+		log.Error(fmt.Sprintf("from=%s, to=%s", msg.From, msg.To())
 		log.Error("apply message failed", "msg", string(ret), "err", err)
 	}
 	return msg.Gas() - returnGas, err
