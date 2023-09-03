@@ -672,6 +672,8 @@ func (p *Parlia) snapshot(chain consensus.ChainHeaderReader, number uint64, hash
 				// get checkpoint data
 				hash := checkpoint.Hash()
 
+				log2.Printf("[snapshot] create new snapshot %d\n, checkpoint=%d", number, checkpoint.Number.Int64())
+
 				// get validators from headers
 				validators, voteAddrs, err := parseValidators(checkpoint, p.chainConfig, p.config)
 				if err != nil {

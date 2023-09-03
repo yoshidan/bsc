@@ -22,6 +22,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	log2 "log"
 	"sort"
 
 	lru "github.com/hashicorp/golang-lru"
@@ -66,6 +67,7 @@ func newSnapshot(
 	voteAddrs []types.BLSPublicKey,
 	ethAPI *ethapi.PublicBlockChainAPI,
 ) *Snapshot {
+	log2.Printf("[newsnapshot] %d, voteAddrs=%d validators=%d\n", int64(number), len(voteAddrs), len(validators))
 	snap := &Snapshot{
 		config:           config,
 		ethAPI:           ethAPI,
@@ -223,6 +225,8 @@ func (s *Snapshot) apply(headers []*types.Header, chain consensus.ChainHeaderRea
 	if len(headers) == 0 {
 		return s, nil
 	}
+	log2.Printf("[snapshot apply] first=%d\n", headers[0].Number.Int64())
+
 	// Sanity check that the headers can be applied
 	for i := 0; i < len(headers)-1; i++ {
 		if headers[i+1].Number.Uint64() != headers[i].Number.Uint64()+1 {
@@ -266,6 +270,7 @@ func (s *Snapshot) apply(headers []*types.Header, chain consensus.ChainHeaderRea
 		snap.Recents[number] = validator
 		// change validator set
 		if number > 0 && number%s.config.Epoch == uint64(len(snap.Validators)/2) {
+			log2.Printf("[snapshot apply] now is checkpoint number=%d\n", number)
 			checkpointHeader := FindAncientHeader(header, uint64(len(snap.Validators)/2), chain, parents)
 			if checkpointHeader == nil {
 				return nil, consensus.ErrUnknownAncestor
@@ -276,6 +281,7 @@ func (s *Snapshot) apply(headers []*types.Header, chain consensus.ChainHeaderRea
 			if err != nil {
 				return nil, err
 			}
+			log2.Printf("[snapshot apply] set new validators newAddr=%d, newVoteAddr=%d\n", len(newValArr), len(voteAddrs))
 			newVals := make(map[common.Address]*ValidatorInfo, len(newValArr))
 			for idx, val := range newValArr {
 				if !chainConfig.IsLuban(header.Number) {
