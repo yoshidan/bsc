@@ -6,8 +6,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	log2 "github.com/rs/zerolog/log"
 	"io"
+	log2 "log"
 	"math"
 	"math/big"
 	"math/rand"
@@ -823,7 +823,7 @@ func (p *Parlia) prepareValidators(header *types.Header) error {
 }
 
 func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, header *types.Header) error {
-	log2.Printf("assembleVoteAttestation %d\n ", header.Number.Int64())
+	log2.Println("assembleVoteAttestation %d\n ", header.Number.Int64())
 	if !p.chainConfig.IsLuban(header.Number) || header.Number.Uint64() < 2 {
 		return nil
 	}
