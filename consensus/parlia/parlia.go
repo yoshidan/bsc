@@ -823,7 +823,7 @@ func (p *Parlia) prepareValidators(header *types.Header) error {
 }
 
 func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, header *types.Header) error {
-	log2.Println("assembleVoteAttestation %d\n ", header.Number.Int64())
+	log2.Printf("[assembleVoteAttestation] start %d\n ", header.Number.Int64())
 	if !p.chainConfig.IsLuban(header.Number) || header.Number.Uint64() < 2 {
 		return nil
 	}
@@ -843,6 +843,7 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 	}
 	votes := p.VotePool.FetchVoteByBlockHash(parent.Hash())
 	if len(votes) < cmath.CeilDiv(len(snap.Validators)*2, 3) {
+		log2.Printf("[assembleVoteAttestation] insufficient validators %d, %d\n ", len(votes), cmath.CeilDiv(len(snap.Validators)*2, 3))
 		return nil
 	}
 
@@ -898,11 +899,12 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 	}
 
 	// Insert vote attestation into header extra ahead extra seal.
+	log2.Printf("[assembleVoteAttestation] start append signature %d\n ", len(header.Extra))
 	extraSealStart := len(header.Extra) - extraSeal
 	extraSealBytes := header.Extra[extraSealStart:]
 	header.Extra = append(header.Extra[0:extraSealStart], buf.Bytes()...)
 	header.Extra = append(header.Extra, extraSealBytes...)
-
+	log2.Printf("[assembleVoteAttestation] end append signature %d\n ", len(header.Extra))
 	return nil
 }
 
