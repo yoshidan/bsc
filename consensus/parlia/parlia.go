@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	log2 "github.com/rs/zerolog/log"
 	"io"
 	"math"
 	"math/big"
@@ -822,6 +823,7 @@ func (p *Parlia) prepareValidators(header *types.Header) error {
 }
 
 func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, header *types.Header) error {
+	log2.Printf("assembleVoteAttestation %d\n ", header.Number.Int64())
 	if !p.chainConfig.IsLuban(header.Number) || header.Number.Uint64() < 2 {
 		return nil
 	}
@@ -1967,7 +1969,7 @@ func applyMessage(
 		msg.Value(),
 	)
 	if err != nil {
-		log.Error(fmt.Sprintf("from=%s, to=%s", msg.From, msg.To()))
+		log.Error(fmt.Sprintf("from=%s, to=%s", msg.From().String(), msg.To()))
 		log.Error("apply message failed", "msg", string(ret), "err", err)
 	}
 	return msg.Gas() - returnGas, err
