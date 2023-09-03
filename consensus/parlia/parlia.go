@@ -1056,9 +1056,9 @@ func (p *Parlia) distributeFinalityReward(chain consensus.ChainHeaderReader, sta
 	msg := p.getSystemMessage(header.Coinbase, common.HexToAddress(systemcontracts.ValidatorContract), data, common.Big0)
 	err = p.applyTransaction(msg, state, header, cx, txs, receipts, systemTxs, usedGas, mining)
 	if err != nil {
-		log.Error("failed to applyTransaction in distributeFinalityReward")
+		log.Error("failed to applyTransaction in distributeFinalityReward : IGNORE")
 	}
-	return err
+	return nil
 }
 
 // Finalize implements consensus.Engine, ensuring no uncles are set, nor block
