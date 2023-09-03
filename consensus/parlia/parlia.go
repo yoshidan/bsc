@@ -1545,8 +1545,10 @@ func (p *Parlia) getCurrentValidators(blockHash common.Hash, blockNum *big.Int) 
 	}
 
 	voteAddrmap := make(map[common.Address]*types.BLSPublicKey, len(valSet))
+	log2.Printf("[getCurrentValidator] number=%d\n", blockNum.Int64())
 	for i := 0; i < len(valSet); i++ {
 		voteAddrmap[valSet[i]] = &(voteAddrSet)[i]
+		log2.Printf("[getCurrentValidator] add=%s voteAdd=%s\n", valSet[i], common.Bytes2Hex(voteAddrSet[i].Bytes()))
 	}
 	return valSet, voteAddrmap, nil
 }
