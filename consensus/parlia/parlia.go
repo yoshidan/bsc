@@ -733,6 +733,7 @@ func (p *Parlia) snapshot(chain consensus.ChainHeaderReader, number uint64, hash
 		}
 		log.Trace("Stored snapshot to disk", "number", snap.Number, "hash", snap.Hash)
 	}
+	log2.Printf("[snapshot] found and applied %d\n", snap.Number)
 	return snap, err
 }
 

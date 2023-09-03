@@ -313,6 +313,10 @@ func (s *Snapshot) apply(headers []*types.Header, chain consensus.ChainHeaderRea
 					snap.Validators[val].Index = idx + 1 // offset by 1
 				}
 			}
+			log2.Printf("[snapshot apply] save ew validators number=%d, len=%d\n", int64(snap.Number), len(snap.Validators))
+			for addr, vote := range snap.Validators {
+				log2.Printf("[snapshot apply] new validators addr=%s, newVoteAddr=%s\n", addr, common.Bytes2Hex(vote.VoteAddress.Bytes()))
+			}
 		}
 
 		snap.updateAttestation(header, chainConfig, s.config)
