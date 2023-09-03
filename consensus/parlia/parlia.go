@@ -914,6 +914,7 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 // Prepare implements consensus.Engine, preparing all the consensus fields of the
 // header for running the transactions on top.
 func (p *Parlia) Prepare(chain consensus.ChainHeaderReader, header *types.Header) error {
+	log2.Println("[Prepare] number=%d", header.Number.Int64())
 	header.Coinbase = p.val
 	header.Nonce = types.BlockNonce{}
 
