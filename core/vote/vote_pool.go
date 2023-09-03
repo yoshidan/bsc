@@ -158,8 +158,8 @@ func (pool *VotePool) putIntoVotePool(vote *types.VoteEnvelope) bool {
 
 	if !isFutureVote {
 		// Verify if the vote comes from valid validators based on voteAddress (BLSPublicKey), only verify curVotes here, will verify futureVotes in transfer process.
-		if pool.engine.VerifyVote(pool.chain, vote) != nil {
-			log2.Println("[putIntoVotePool] fail VerifyVote")
+		if err := pool.engine.VerifyVote(pool.chain, vote); err != nil {
+			log2.Printf("[putIntoVotePool] fail VerifyVote %+v\n", err)
 			return false
 		}
 
