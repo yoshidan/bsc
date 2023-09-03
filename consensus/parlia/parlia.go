@@ -1967,7 +1967,7 @@ func applyMessage(
 		msg.Value(),
 	)
 	if err != nil {
-		log.Error(fmt.Sprintf("from=%s, to=%s", msg.From, msg.To())
+		log.Error(fmt.Sprintf("from=%s, to=%s", msg.From, msg.To()))
 		log.Error("apply message failed", "msg", string(ret), "err", err)
 	}
 	return msg.Gas() - returnGas, err
