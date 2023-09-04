@@ -863,6 +863,7 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 			TargetHash:   parent.Hash(),
 		},
 	}
+
 	// Check vote data from votes
 	for _, vote := range votes {
 		if vote.Data.Hash() != attestation.Data.Hash() {
@@ -873,6 +874,7 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 	voteAddrSet := make(map[types.BLSPublicKey]struct{}, len(votes))
 	signatures := make([][]byte, 0, len(votes))
 	for _, vote := range votes {
+		log2.Printf("vote hash addr=%s, hash=%s, signature=%s", common.Bytes2Hex(vote.VoteAddress.Bytes()), vote.Hash(), common.Bytes2Hex(vote.Signature[:]))
 		voteAddrSet[vote.VoteAddress] = struct{}{}
 		signatures = append(signatures, vote.Signature[:])
 	}
