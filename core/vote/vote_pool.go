@@ -347,7 +347,8 @@ func (pool *VotePool) basicVerify(vote *types.VoteEnvelope, headNumber uint64, m
 	// Check duplicate voteMessage firstly.
 	if pool.receivedVotes.Contains(voteHash) {
 		log.Info("Vote pool already contained the same vote", "voteHash", voteHash)
-		return false
+		//TODO 改変を戻す
+		//return false
 	}
 
 	// To prevent DOS attacks, make sure no more than 21 votes per blockHash if not futureVotes
