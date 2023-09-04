@@ -346,7 +346,7 @@ func (pool *VotePool) basicVerify(vote *types.VoteEnvelope, headNumber uint64, m
 
 	// Check duplicate voteMessage firstly.
 	if pool.receivedVotes.Contains(voteHash) {
-		log.Debug("Vote pool already contained the same vote", "voteHash", voteHash)
+		log.Info("Vote pool already contained the same vote", "voteHash", voteHash)
 		return false
 	}
 
@@ -358,6 +358,7 @@ func (pool *VotePool) basicVerify(vote *types.VoteEnvelope, headNumber uint64, m
 	}
 	if voteBox, ok := m[targetHash]; ok {
 		if len(voteBox.voteMessages) >= maxVoteAmountPerBlock {
+			log.Info("Vote pool max voteMessages exceeded", "size", len(voteBox.voteMessages))
 			return false
 		}
 	}
