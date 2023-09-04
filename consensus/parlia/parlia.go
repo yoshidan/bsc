@@ -864,6 +864,23 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 		},
 	}
 
+	// TODO 戻し
+	var filteredVotes []*types.VoteEnvelope
+	// 重複除去
+	for _, vote := range votes {
+		found := false
+		for _, f := range filteredVotes {
+			if f.VoteAddress == vote.VoteAddress {
+				found = true
+				break
+			}
+		}
+		if !found {
+			filteredVotes = append(filteredVotes, vote)
+		}
+	}
+	votes = filteredVotes
+
 	// Check vote data from votes
 	for _, vote := range votes {
 		if vote.Data.Hash() != attestation.Data.Hash() {
