@@ -1738,6 +1738,8 @@ func (p *Parlia) GetJustifiedNumberAndHash(chain consensus.ChainHeaderReader, he
 		return 0, common.Hash{}, err
 	}
 
+	fmt.Printf("GetJustifiedNumberAndHash snap=%d, header=%d, snapAttestationNil=%t", snap.Number, header.Number, snap.Attestation == nil)
+
 	if snap.Attestation == nil {
 		if p.chainConfig.IsLuban(header.Number) {
 			log.Debug("once one attestation generated, attestation of snap would not be nil forever basically")
