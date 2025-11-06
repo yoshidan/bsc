@@ -1081,7 +1081,7 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 			break
 		}
 		skip++
-		fmt.Printf("skipped target header=%s, skip=%s", header.Number.String(), targetHeader.Number.String())
+		log.Info(fmt.Sprintf("skipped target header=%s, skip=%s", header.Number.String(), targetHeader.Number.String()))
 
 		targetHeader = chain.GetHeaderByHash(targetHeader.ParentHash)
 		if targetHeader == nil {
