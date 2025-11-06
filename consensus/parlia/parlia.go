@@ -1067,6 +1067,7 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 		targetHeader           = parent
 		targetHeaderParentSnap *Snapshot
 	)
+	skip := 0
 	for range p.GetAncestorGenerationDepth(header) {
 		snap, err := p.snapshot(chain, targetHeader.Number.Uint64()-1, targetHeader.ParentHash, nil)
 		if err != nil {
@@ -1074,10 +1075,13 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 		}
 		votes = p.VotePool.FetchVotesByBlockHash(targetHeader.Hash())
 		quorum := cmath.CeilDiv(len(snap.Validators)*2, 3)
-		if len(votes) >= quorum {
+		// 最初は飛ばして擬似的に次のtargetを作る
+		if len(votes) >= quorum && skip > 0 {
 			targetHeaderParentSnap = snap
 			break
 		}
+		skip++
+		fmt.Printf("skipped target header=%s, skip=%s", header.Number.String(), targetHeader.Number.String())
 
 		targetHeader = chain.GetHeaderByHash(targetHeader.ParentHash)
 		if targetHeader == nil {
