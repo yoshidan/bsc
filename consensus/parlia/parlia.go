@@ -1081,7 +1081,7 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 			break
 		}
 		skip++
-		log.Info(fmt.Sprintf("skipped target header=%s, skip=%s", header.Number.String(), targetHeader.Number.String()))
+		log.Info(fmt.Sprintf("skipped target header=%s, skipTarget=%s, source=%d", header.Number.String(), targetHeader.Number.String()), int64(justifiedBlockNumber))
 
 		targetHeader = chain.GetHeaderByHash(targetHeader.ParentHash)
 		if targetHeader == nil {
@@ -1092,8 +1092,10 @@ func (p *Parlia) assembleVoteAttestation(chain consensus.ChainHeaderReader, head
 		}
 	}
 	if targetHeaderParentSnap == nil {
+		log.Info(fmt.Sprintf("no vote header=%s, source=%d", header.Number.String(), justifiedBlockNumber))
 		return nil
 	}
+	log.Info(fmt.Sprintf("has vote header=%s, target=%d, source=%d", header.Number.String(), targetHeader.Number.String(), justifiedBlockNumber))
 
 	// === Step 3: Build vote attestation ===
 	attestation := &types.VoteAttestation{
